@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html> 
+<head> 
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" /> 
+  <title>Google Maps Multiple Markers</title> 
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+</head> 
+<body>
+  <div id="map" style="width: 1024px; height: 768px;"></div>
+
+  <script type="text/javascript">
+
+$(document).ready(function(){
+
+  $.ajax(
+  {
+    //get data
+    url: 'https://bitbucket.org/tatataufik/indodata/raw/9338cc6bf92e17507051e5094c7929d33978616d/province_regency_indonesia.json',
+    dataType: "json",    
+    success: function( response ) 
+    { 
+      if (response.length > 0) 
+      {
+        // Setup the different icons and shadows
+        var iconURLPrefix = 'http://maps.google.com/mapfiles/ms/icons/';        
+        var icons = [
+          iconURLPrefix + 'red-dot.png',
+          iconURLPrefix + 'green-dot.png',
+          iconURLPrefix + 'blue-dot.png',
+          iconURLPrefix + 'orange-dot.png',
+          iconURLPrefix + 'purple-dot.png',
+          iconURLPrefix + 'pink-dot.png',      
+          iconURLPrefix + 'yellow-dot.png'
+        ];
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 5,
+          center: new google.maps.LatLng(-2.3260425, 115.6154732),
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+        });
+        var infowindow = new google.maps.InfoWindow();
+        var marker;     
+
+        for(ii=0; ii<response.length; ii++)
+        {
+          for(jj=0; jj<response[ii]['districts'].length; jj++)
+          {
+            //plotting  
+            marker = new google.maps.Marker({
+              position: new google.maps.LatLng(response[ii]['districts'][jj]['latitude'], response[ii]['districts'][jj]['longitude']),
+              map: map,
+              //green icon for "KOTA", red icon for "KABUPATEN"
+              icon: (response[ii]['districts'][jj]['type'] == "KAB" ?  icons[0] : icons[1] ),
+            });
+            
+            google.maps.event.addListener(marker, 'click', (function(marker, ii, jj) {                        
+              return function() {
+                infowindow.setContent(response[ii]['districts'][jj]['name']);
+                infowindow.open(map, marker);
+              }
+            })(marker, ii, jj));
+          }
+        }
+      }
+    },
+    error: function( error )
+    {
+      alert("Internet Connection Error or the server is busy. Please wait a moment then try again.");   
+    } 
+
+  });
+});
+
+
+  </script>
+</body>
+</html>
