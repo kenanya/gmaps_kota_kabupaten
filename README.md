@@ -1,2 +1,2 @@
 # gmaps_kota_kabupaten
-plotting kota dan kabupaten di indonesia
+plotting of cities and districts in indonesia
